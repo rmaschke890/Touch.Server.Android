@@ -5,6 +5,7 @@ namespace Touch.Server.Android
 {
     using CommandLine;
     using CommandLine.Text;
+    using System.Linq;
 
     class CommandLineOptions
     {
@@ -40,6 +41,19 @@ namespace Touch.Server.Android
         public string GetUsage()
         {
             return HelpText.AutoBuild(this);
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(CommandLineOptions)} [{nameof(IpAddress)} = {IpAddress}]\r\n" + 
+                $"[{nameof(Port)} = {Port.ToString()}]\r\n" +
+                $"[{nameof(LogFilePath)} = {LogFilePath}]\r\n" +
+                $"[{nameof(LogFileName)} = {LogFileName}]\r\n" +
+                $"[{nameof(AutoExit)} = {AutoExit.ToString()}]\r\n" +
+                $"[{nameof(Activity)} = {Activity}]\r\n" +
+                $"[{nameof(AdbPath)} = {AdbPath}]\r\n" +
+                $"[{nameof(Verbose)} = {Verbose.ToString()}]\r\n" +
+                $"[{nameof(AdbParams)} = {AdbParams.Aggregate(string.Empty, (text, arg) => string.IsNullOrWhiteSpace(text) ? arg : $"{text} | {arg}")}]\r\n";
         }
     }
 }

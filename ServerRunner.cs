@@ -18,6 +18,8 @@ namespace Touch.Server.Android
 
             if (CommandLine.Parser.Default.ParseArguments(args, Options))
             {
+                LogMessage(Options.ToString());
+
                 if (!string.IsNullOrWhiteSpace(Options.Activity))
                 {
                     returnCode = StartAdbAndListener();
@@ -33,6 +35,9 @@ namespace Touch.Server.Android
                 Console.WriteLine("Failed to parse options");
             }
 
+#if DEBUG
+            //Console.ReadKey();
+#endif
             return returnCode;
         }
 
