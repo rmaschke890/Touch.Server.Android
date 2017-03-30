@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+
+using Touch.Server.Android.Extensions;
 
 namespace Touch.Server.Android
 {
-    using System.Diagnostics;
-
-    class AdbActivtiyLaunchCommand
+	class AdbActivtiyLaunchCommand
     {
         private const string AdbExeName = "adb.exe";
+		private const string AdbCmdName = "adb";
 
         public string AdbExeFile { get; set; }
         public string Activity { get; set; }
@@ -25,20 +29,21 @@ namespace Touch.Server.Android
         {
             ServerRunner.LogMessage("Executing adb command\n Activity : {0}\n AdbExeFilePath : {1}", this.Activity, this.AdbExeFile);
 
-            var info = new ProcessStartInfo
-            {
-                FileName = this.AdbExeFile,
-                UseShellExecute = true,
-                Arguments = this.BuildActivitylaunchCommand(),
-            };
+			var info = new ProcessStartInfo
+			{
+				FileName = this.AdbExeFile,
+				Arguments = this.BuildActivitylaunchCommand()
+			};
+
+			if (Environment.OSVersion.Platform.IsMacOSX())
+				info.UseShellExecute = false; // Mac OSX and Unix
+			else
+				info.UseShellExecute = true; // for Windows machines
 
             ServerRunner.LogMessage($"arguments for adb: {info.Arguments}");
 
-            using (var proc = new Process())
+			using (var proc = Process.Start(info))
             {
-                proc.StartInfo = info;
-
-                proc.Start();
                 proc.WaitForExit();
 
                 ServerRunner.LogMessage("Finished with adb command (return code : {0})", proc.ExitCode);
@@ -66,17 +71,12 @@ namespace Touch.Server.Android
                 return AdbExeName;
             }
 
-            if (path.Contains("adb"))
+			if (path.EndsWith(AdbExeName, StringComparison.InvariantCulture))
             {
                 return path;
             }
 
-            if (!path.EndsWith("\\"))
-            {
-                path += "\\";
-            }
-
-            return path + AdbExeName;
+			return Path.Combine(path, Environment.OSVersion.Platform.IsMacOSX() ? AdbCmdName : AdbExeName);
         }
     }
 }

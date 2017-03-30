@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 
+using System;
+using System.Net;
+using System.Threading;
+
 namespace Touch.Server.Android
 {
-    using System;
-    using System.Net;
-    using System.Threading;
-
     class ServerRunner
     {
         private static readonly CommandLineOptions Options = new CommandLineOptions();
